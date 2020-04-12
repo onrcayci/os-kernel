@@ -1,1 +1,5 @@
 /simple-shell/*.o
+
+/simple-shell/*.txt
+
+/simple-shell/bin/

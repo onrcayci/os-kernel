@@ -48,6 +48,6 @@ int parseInput(char input[]) {
 			b++;
 		}
 	}
-	return interpreter(words);
+	return interpreter(words, w);
 }
 
