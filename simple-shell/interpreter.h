@@ -1,1 +1,1 @@
-int interpreter(char *words[]);
+int interpreter(char *words[], int wordCount);

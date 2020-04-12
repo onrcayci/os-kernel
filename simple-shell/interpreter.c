@@ -5,32 +5,32 @@
 #include "shellmemory.h"
 #include "shell.h"
 
-int flag;											//flag for quit method
+int flag;										//flag for quit method
 
-void help(char *words[]);							//help command method
+int help(char *words[], int wordCount);			//help command method
 
-void quit(char *words[]);							//quit command method
+int quit(char *words[], int wordCount);			//quit command method
 
-int set(char *words[]);								//set command method
+int set(char *words[], int wordCount);				//set command method
 
-int print(char *words[]);							//print command method
+int print(char *words[], int wordCount);			//print command method
 
-int run(char *words[]);								//run command method
+int run(char *words[], int wordCount);				//run command method
 
-int interpreter(char *words[]) {					//assumes cmd switchs args
+int interpreter(char *words[], int wordCount) {		//assumes cmd switchs args
 													//assumes words[0] is cmd
 	int errorCode = 0;
 
 	if (strcmp(words[0], "help") == 0) {
-		help(words);
+		errorCode = help(words, wordCount);
 	} else if (strcmp(words[0], "quit") == 0) {
-		quit(words);
+		errorCode = quit(words, wordCount);
 	} else if (strcmp(words[0], "set") == 0) {
-		errorCode = set(words);
+		errorCode = set(words, wordCount);
 	} else if (strcmp(words[0], "print") == 0) {
-		errorCode = print(words);
+		errorCode = print(words, wordCount);
 	} else if (strcmp(words[0], "run") == 0) {
-		errorCode = run(words);
+		errorCode = run(words, wordCount);
 	} else {
 		errorCode = 1;
 	} 
@@ -46,32 +46,60 @@ int interpreter(char *words[]) {					//assumes cmd switchs args
 		printf("Missing argument\n");
 	} else if(errorCode == 6) {						//shell memory is full error
 		printf("Shell memory is full\n");
+	} else if(errorCode == 7) {
+		printf("Too many arguments!\n");
 	}
 	return errorCode;
 };
-void help(char *words[]) {
-	printf("These shell commands are defined internally. Type 'help' to see this list.\n\n");
-	printf("COMMAND\t\t\t\tDESCRIPTION\n\n");
-	printf("help\t\t\t\tdisplays all commands\n");
-	printf("quit\t\t\t\texits / terminates the shell with 'Bye!'\n");
-	printf("set VAR STRING\t\t\tassigns a value to shell memory\n");
-	printf("print VAR\t\t\tdisplays the STRING assigned to VAR\n");
-	printf("run SCRIPT.TXT\t\t\texecutes the file SCRIPT.TXT\n");
-}
-
-void quit(char *words[]) {
-	printf("Bye!\n");
-	exit(0);
-}
-
-int set(char *words[]) {
+int help(char *words[], int wordCount) {
 	int errorCode = 0;
+	if(wordCount == 1) {
+		printf("These shell commands are defined internally. Type 'help' to see this list.\n\n");
+		printf("COMMAND\t\t\t\tDESCRIPTION\n\n");
+		printf("help\t\t\t\tdisplays all commands\n");
+		printf("quit\t\t\t\texits / terminates the shell with 'Bye!'\n");
+		printf("set VAR STRING\t\t\tassigns a value to shell memory\n");
+		printf("print VAR\t\t\tdisplays the STRING assigned to VAR\n");
+		printf("run SCRIPT.TXT\t\t\texecutes the file SCRIPT.TXT\n\n");
+	} else {
+		errorCode = 7;
+		return errorCode;
+	}
+	return errorCode;
+}
+
+int quit(char *words[], int wordCount) {
+	int errorCode = 0;
+	if(wordCount == 1) {
+		if(flag == 1) {
+			flag = 0;
+			return errorCode;
+		}
+		printf("Bye!\n");
+		exit(0);
+	} else {
+		errorCode = 7;
+		return errorCode;
+	}
+	return errorCode;
+}
+
+int set(char *words[], int wordCount) {
+	int errorCode = 0;
+	if(wordCount < 3) {
+		errorCode = 5;
+		return errorCode;
+	}
 	errorCode = store(words);
 	return errorCode;
 }
 
-int print(char *words[]) {
+int print(char *words[], int wordCount) {
 	int errorCode = 0;
+	if(wordCount == 1) {
+		errorCode = 5;
+		return errorCode;
+	}
 	char *variable = strdup(words[1]);
 	char *tmp = get(variable);
 	char *string = strdup(tmp);
@@ -83,10 +111,11 @@ int print(char *words[]) {
 	return errorCode;
 }
 
-int run(char *words[]) {
+int run(char *words[], int wordCount) {
 	int errorCode = 0;
+	flag = 1;
 	char line[1000];
-	if(words[1] == NULL) {
+	if(wordCount == 1) {
 		errorCode = 3;
 		return errorCode;
 	} else {
@@ -102,6 +131,7 @@ int run(char *words[]) {
 			return errorCode;
 		}
 		fclose(fptr);
+		flag = 0;
 	}
 	return errorCode;
 }
