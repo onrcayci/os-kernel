@@ -1,4 +1,5 @@
 # Simple Shell
+
 This is the first phase of the design. This design includes a simple command line tool and a shell memory where a variable can be stored with its value. Following are the commands availabe in this design phase:
 
 - help: Displays all commands
