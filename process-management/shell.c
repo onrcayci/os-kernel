@@ -12,11 +12,15 @@ int shellUI() {
 	char userInput[1000];                                   //user's input stored here
 	int errorCode = 0;                                      //0 means no error, default
 
-	printf("%s ", prompt);
-	fgets(userInput, 999, stdin);                   		//limit input to array size
+	while(1) {
+		printf("%s ", prompt);
+		fgets(userInput, 999, stdin);                   		//limit input to array size
 
-	errorCode = parseInput(userInput);
-	return errorCode;
+		errorCode = parseInput(userInput);
+		if(errorCode == -1) {
+			exit(99);
+		}
+	}
 }
 
 int parseInput(char input[]) {

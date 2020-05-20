@@ -20,4 +20,11 @@ void addToRAM(FILE *p, int *start, int *end) {
     }
     e = s-1;
     *end = e;
-} 
+}
+
+void clearRAM(int start, int end) {
+    int i;
+    for(i=start; i <= end; i++) {
+        ram[i] = NULL;
+    }
+}

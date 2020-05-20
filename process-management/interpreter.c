@@ -40,6 +40,33 @@ int interpreter(char *words[], int wordCount) {							//assumes cmd switchs args
 	}else {
 		errorCode = 1;
 	}
+	if(errorCode == 1) {                       //Unknown command error
+		printf("Unknown command\n");
+	}
+	else if(errorCode == 2) {
+		printf("Variable does not exist\n");
+	}
+	else if(errorCode == 3) {
+		printf("No file name is given\n");
+	}
+	else if(errorCode == 4) {
+		printf("Script not found\n");
+	}
+	else if(errorCode == 5) {
+		printf("Missing argument\n");
+	}
+	else if(errorCode == 6) {
+		printf("Shell memory is full\n");
+	}
+	else if(errorCode == 7) {
+		printf("Too many programs are tried to be executed!\n");
+	}
+	else if(errorCode == 8) {
+		printf("Unable to load script!\n");
+	}
+	else if(errorCode == 9) {
+		printf("CPU is not available!\n");
+	}
 	return errorCode;
 };
 void help(char *words[]) {
@@ -103,7 +130,8 @@ int run_script(char *words[], int wordCount) {
 		return errorCode;
 	} else {
 		FILE *fptr;
-		if(fptr = fopen(words[1], "r")) {
+		fptr = fopen(words[1], "r");
+		if(fptr != NULL) {
 			runFlag = 1;
 			while(fgets(line, 999, fptr) != NULL) {
                         parseInput(line);

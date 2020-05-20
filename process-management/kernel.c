@@ -17,6 +17,8 @@ int myInit(char *filename);
 
 void addToReady(struct PCB *ptr);
 
+void clearReady();
+
 int scheduler();
 
 int main() {
@@ -26,39 +28,10 @@ int main() {
     printf("Kernel 1.0 loaded!\n");
     printf("Welcome to the Onur Cayci's shell!\n");
 	printf("Version 2.0 Updated February 2020\n");
-    while(1) {
-        errorCode = shellUI();
-        if(errorCode == -1) {
-		    exit(99);				                    //ignore all other errors
-	    }
-        else if(errorCode == 1) {                       //Unknown command error
-            printf("Unknown command\n");
-        }
-        else if(errorCode == 2) {
-            printf("Variable does not exist\n");
-        }
-        else if(errorCode == 3) {
-            printf("No file name is given\n");
-        }
-        else if(errorCode == 4) {
-            printf("Script not found\n");
-        }
-        else if(errorCode == 5) {
-            printf("Missing argument\n");
-        }
-        else if(errorCode == 6) {
-            printf("Shell memory is full\n");
-        }
-        else if(errorCode == 7) {
-            printf("Too many programs are tried to be executed!\n");
-        }
-        else if(errorCode == 8) {
-            printf("Unable to load script!\n");
-        }
-        else if(errorCode == 9) {
-            printf("CPU is not available!\n");
-        }
-    }
+    errorCode = shellUI();
+    if(errorCode == -1) {
+		exit(99);				                    //ignore all other errors
+	}
 }
 
 int myInit(char *filename) {
@@ -68,11 +41,14 @@ int myInit(char *filename) {
     int *sptr, *eptr;
     sptr = &start;
     eptr = &end;
-    if(fptr = fopen(filename, "r")) {
+    fptr = fopen(filename, "r");
+    if(fptr != NULL) {
         addToRAM(fptr, sptr, eptr);
         struct PCB *ptr = makePCB(start, end);
         addToReady(ptr);
     } else {
+        clearReady();
+        clearRAM(0, 999);
         errorCode = 8;
         return errorCode;
     }
@@ -98,6 +74,35 @@ void addToReady(struct PCB *ptr) {
     }
 }
 
+void clearReady() {
+    if(pcount == 0) {
+        return;
+    }
+    else if(pcount == 1) {
+        struct PCB *tmp = head;
+        tmp->next = NULL;
+        head->next = NULL;
+        tail->next = NULL;
+        head = NULL;
+        tail = NULL;
+        free(tmp);
+        pcount = 0;
+    }
+    else if(pcount == 2) {
+        struct PCB *tmp1 = head;
+        struct PCB *tmp2 = tail;
+        tmp1->next = NULL;
+        tmp2->next = NULL;
+        head->next = NULL;
+        tail->next = NULL;
+        head = NULL;
+        tail = NULL;
+        free(tmp1);
+        free(tmp2);
+        pcount = 0;
+    }
+}
+
 int scheduler() {
     int errorCode = 0;
     int temp = head->end;
@@ -116,9 +121,7 @@ int scheduler() {
                         head = head->next;
                         tmp->next = NULL;
                         int i;
-                        for(i=tmp->start; i<=(tmp->end); i++) {
-                            ram[i] = NULL;
-                        }
+                        clearRAM(tmp->start, tmp->end);
                         free(tmp);
                         pcount--;
                     } else if(pcount == 1) {
@@ -127,9 +130,7 @@ int scheduler() {
                         tail = NULL;
                         tmp->next = NULL;
                         int i;
-                        for(i=tmp->start; i<=(tmp->end); i++) {
-                            ram[i] = NULL;
-                        }
+                        clearRAM(tmp->start, tmp->end);
                         free(tmp);
                         pcount--;
                     }
