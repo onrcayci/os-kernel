@@ -3,3 +3,5 @@
 /simple-shell/*.txt
 
 */*.txt
+
+/process-management/*.o
